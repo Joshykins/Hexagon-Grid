@@ -1,111 +1,188 @@
 
+
+let app, stage;
+let hexBackground = [];
+let settings = {
+    //Size of hexagons
+    size: 70,
+    //none glowing color
+    color: [.1,.2,.12],
+    //Random modifier
+    randomColorMod: .015,
+    //glowing color
+    glow: [.1,1.0,.4],
+    //Scale of the height field
+    scale: .2,
+    //Speed of the height field-movement
+    speed: .005,
+    //Target Height Value
+    target: .5,
+    //Range Of Heights Around target to render
+    range: .3,
+    //Scale of hexagon modifier
+    widthModifier:1.01,
+    heightModifier:1.21
+}
+let hexValues = {};
+//Utils
+let inverseLinearInterpolation = (min, max, val) => {
+    return ((val-min)/(max-min));
+};
+
+let linearInterpolation = (min, max, k) => {
+    return min + (max - min) * k;
+}
+
 window.onload = () => {
     PIXI.utils.sayHello();
     let bg = document.querySelector('#display');
-    
-    let renderer = PIXI.autoDetectRenderer(bg.clientWidth, bg.clientHeight, {
-      transparent: false,
-      resolution: 1,
-      backgroundColor:0x000000,
-      clearBeforeRender:true,
-      autoResize:true
+        
+
+        
+    app = new PIXI.autoDetectRenderer(bg.clientWidth, bg.clientHeight, {
+        transparent: false,
+        resolution: 1,
+        backgroundColor:0x000000,
+        clearBeforeRender:true,
+        autoResize:true
     });
-    
-    
-    document.getElementById('display').appendChild(renderer.view);
-    let stage = new PIXI.Container();
-    
-    
+    document.getElementById('display').appendChild(app.view);
+
+    stage = new PIXI.Container();
+
+
     let setup = () => {
-        createHexagons();
-      }
-    
+        //Setup hexagon grid
+        setupNoise();
+        createHexagons(bg);
+        animationLoop();
+    }
+    //Load in images
     PIXI.loader
-      .add("hex", "a/i/hex.png")
-      .load(setup);
-    
-    
-    
+    .add("hex", "a/i/hex.png")
+    .load(setup);
 
-    let hexagons;
-    let createHexagons = () => {
-        let i = 0; //x travel
-        let j = 0; //y travel
-        let scale = 30;    
-        for(i = 0;i*scale<bg.clientWidth; i+=1) {
-            for(j = 0;j*scale<bg.clientHeight; j+=1) {
-                if(j % 2 == 0) {
-                    new Hexagon(i*scale-(scale/2), scale)
-                } else {
-                    new Hexagon(i*scale, j*scale, scale);
-                }
-    
-            }
-        }
-    }
-    
-    class Hexagon {
-        constructor() {
-            this.hexagon  = new PIXI.grpahics();
-            this.x = x;
-            this.y = y;
-            this.size = size;
-        }
-        draw() {
-            this.hexagon.clear();
-            this.star.beginFill(0xffffff,this.opacity)
-            this.star.drawCircle(this.x, this.y, this.size)
-            this.star.endFill();
-        }
-        update() {
 
-            this.draw();
+    // center the sprite's anchor point
+    //bunny.anchor.set(0.5);
+
+    // move the sprite to the center of the screen
+    //bunny.x = app.screen.width / 2;
+    //bunny.y = app.screen.height / 2;
+
+    let _t = NaN;
+    let animationLoop = () => {
+        let t = Date.now();
+        let deltaT = (t - _t)/1000;
+        if (isNaN(deltaT)) {
+        deltaT = 0;
         }
+    
+        for (let i = 0; i < hexBackground.length; i++) {
+            const element = hexBackground[i];
+            element.update(deltaT);
+        }
+
+        hexValues.update();
+        _t = t;
+        app.render(stage);
+        requestAnimationFrame(animationLoop);
     }
-    /*
-    movement:0,
-    //Scale is the size of each hexagon.
-    scale:10,
-    //Size is the scale of the perlin map 
-    size:6,
-    //Target is the target value to display
-    target:.3,
-    //Offset determines the thickness of the target value
-    offset:.05,
-    //Speed is the incremente at which the values cycle from the perlin noise
-    speed:.01,
-    //TargetSpeed is the incremend at which the target value cycles
-    targetSpeed:.003,
-    start(seed) {
-        noise.seed(seed);
-    },
-    draw() {
-    
-        
-        //Reset
-        //Draw perlin
-    
-        
-        while( i*this.size < CanvasProperties.width) {
-            j = 0;
-            while( j*this.size < CanvasProperties.height-this.size) {
-                let val = noise.perlin2(i*.03 , j*.03 )+.5+this._movement;
-                if(val < this.target + this.offset && val > this.target - this.offset) {
-                    CanvasProperties.ctx.fillStyle = `rgba(255,0,0,1)`;
-                    CanvasProperties.ctx.fillRect(i*this.size, j*this.size, this.size, this.size);
-                }
-                j++
-            }
-            i++
-        }
-        
-    },
+}
+let setupNoise = () => {
+    noise.seed(Math.floor(123));
+
+    hexValues = new Noise(settings.scale, settings.speed);
+
+}
+class Noise {
+    constructor(scale, speed) {
+        this.scale = scale;
+        this.speed = speed
+        this.movement = 0;
+    }
+    retrieveHeight(x, y) {
+        return noise.perlin2(x*this.scale,y*this.scale)+this.movement+.5;
+    }
     update() {
-        this.movement += this.speed;
-        if(this.movement > .5) {
-            this.movement = -1;
-            noise.seed(Math.floor(Math.random()*100));
+
+        hexValues.movement += this.speed;
+        if(hexValues.movement > .5 + settings.range) {
+            hexValues.movement = -settings.range - .5;
+            noise.seed(Math.floor(Math.random()*1000));
             console.log("reset");
         }
-    }*/
+
+    }
+}
+let createHexagons = (bg) => {
+    //lets make one hexagon
+    let k = 0;
+    for(let j = 0;  /*Generate one more y*/ j-1 < (bg.clientHeight/settings.size)*settings.heightModifier; j++) {
+        for(let i = 0; i-1 < (bg.clientWidth/settings.size)*settings.widthModifier; i++) {
+            if(j % 2 == 0) {
+                hexBackground[k] = new Hexagon(i*settings.size, j*settings.size*.9, settings.size);
+            }
+            else {
+                hexBackground[k] = new Hexagon(i*settings.size+(settings.size/2), j*settings.size*.9, settings.size);
+            }
+            k++;
+        }
+    }
+    for (let i = 0; i < hexBackground.length; i++) {
+        const element = hexBackground[i];
+        stage.addChild(element.hex);
+    }
+};
+class Hexagon { 
+    constructor(x,y,size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.val = 0.0;
+        this.min = settings.target - settings.range;
+        this.max = settings.target + settings.range;
+        this.color = new Array(3);
+        this.originalColor = new Array(3);
+        this.originalColor[0] = [settings.color[0]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
+        this.originalColor[1] = [settings.color[1]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
+        this.originalColor[2] = [settings.color[2]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
+        this.colormod = 0.0;
+        this.hex = new PIXI.Sprite(
+        PIXI.loader.resources['hex'].texture
+        );
+    }
+
+    draw(deltaT) {
+        this.hex.x = this.x;
+        this.hex.y = this.y;
+        this.hex.anchor.set(0.5);
+        this.hex.width = this.size*settings.widthModifier; /*scale modifiers*/
+        this.hex.height = this.size*settings.heightModifier;
+        this.hex.tint = PIXI.utils.rgb2hex(this.color);
+    }
+
+    update(deltaT) {
+
+        this.val = hexValues.retrieveHeight(this.x/this.size,this.y/this.size);
+
+
+        if(this.val > this.min && this.val < this.max) {
+            if(this.val < settings.target) {
+                this.colormod = inverseLinearInterpolation(this.min, settings.target, this.val)
+            }
+            else if (this.val > settings.target) {
+                this.colormod = Math.abs(inverseLinearInterpolation(settings.target, this.max, this.val) - 1)      
+            }
+            
+            this.color[0] = linearInterpolation(settings.color[0], settings.glow[0], this.colormod);
+            this.color[1] = linearInterpolation(settings.color[1], settings.glow[1], this.colormod);
+            this.color[2] = linearInterpolation(settings.color[2], settings.glow[2], this.colormod);
+        }
+        else {
+            this.colormod = 0;
+            this.color = [this.originalColor[0],this.originalColor[1],this.originalColor[2]];
+        }
+    this.draw(deltaT);
+    }
 }
