@@ -1,28 +1,8 @@
 
 
 let app, stage;
+let menuFilter;
 let hexBackground = [];
-let settings = {
-    //Size of hexagons
-    size: 70,
-    //none glowing color
-    color: [.1,.2,.12],
-    //Random modifier
-    randomColorMod: .015,
-    //glowing color
-    glow: [.1,1.0,.4],
-    //Scale of the height field
-    scale: .2,
-    //Speed of the height field-movement
-    speed: .005,
-    //Target Height Value
-    target: .5,
-    //Range Of Heights Around target to render
-    range: .3,
-    //Scale of hexagon modifier
-    widthModifier:1.01,
-    heightModifier:1.21
-}
 let hexValues = {};
 //Utils
 let inverseLinearInterpolation = (min, max, val) => {
@@ -34,10 +14,10 @@ let linearInterpolation = (min, max, k) => {
 }
 
 window.onload = () => {
+    setupSettings();
     PIXI.utils.sayHello();
     let bg = document.querySelector('#display');
         
-
         
     app = new PIXI.autoDetectRenderer(bg.clientWidth, bg.clientHeight, {
         transparent: false,
@@ -50,7 +30,21 @@ window.onload = () => {
 
     stage = new PIXI.Container();
 
+    //Applying blur filter
+    //TODO: move elsewhere
 
+
+    //Resizing Window Updating
+    window.addEventListener("resize", (e) => {
+        app.screen.width = bg.clientWidth;
+        app.resize(bg.clientWidth,bg.clientHeight);
+        menuFilter = new PIXI.Rectangle(0,0,bg.clientWidth,bg.clientHeight);
+        stage.filterArea = menuFilter;
+        stage.filters = [new PIXI.filters.BlurFilter(5, 3)];
+        refreshDisplayHexagons(bg)
+    });
+
+    //run all setup scripts
     let setup = () => {
         //Setup hexagon grid
         setupNoise();
@@ -61,7 +55,6 @@ window.onload = () => {
     PIXI.loader
     .add("hex", "a/i/hex.png")
     .load(setup);
-
 
     // center the sprite's anchor point
     //bunny.anchor.set(0.5);
@@ -92,28 +85,31 @@ window.onload = () => {
 let setupNoise = () => {
     noise.seed(Math.floor(123));
 
-    hexValues = new Noise(settings.scale, settings.speed);
+    hexValues = new Noise();
 
 }
 class Noise {
-    constructor(scale, speed) {
-        this.scale = scale;
-        this.speed = speed
+    
+    constructor() {
         this.movement = 0;
     }
+
     retrieveHeight(x, y) {
-        return noise.perlin2(x*this.scale,y*this.scale)+this.movement+.5;
+        return noise.perlin2(x*settings.scale,y*settings.scale)+this.movement+.5;
     }
+
     update() {
-
-        hexValues.movement += this.speed;
-        if(hexValues.movement > .5 + settings.range) {
-            hexValues.movement = -settings.range - .5;
-            noise.seed(Math.floor(Math.random()*1000));
-            console.log("reset");
+        hexValues.movement += settings.speed;
+        if(hexValues.movement > settings.range+settings.target) {
+            this.resetNoise();
         }
-
     }
+    
+    resetNoise() {
+        hexValues.movement = ( -settings.range-settings.target-.01 );
+        noise.seed(Math.floor(Math.random()*1000));
+    }
+    
 }
 let createHexagons = (bg) => {
     //lets make one hexagon
@@ -134,6 +130,14 @@ let createHexagons = (bg) => {
         stage.addChild(element.hex);
     }
 };
+let refreshDisplayHexagons = (bg) => {
+    for (let i = 0; i < hexBackground.length; i++) {
+        const element = hexBackground[i];
+        element.hex.destroy();
+    }
+    hexBackground.length = 0;
+    createHexagons(bg);
+}
 class Hexagon { 
     constructor(x,y,size) {
         this.x = x;
@@ -144,9 +148,9 @@ class Hexagon {
         this.max = settings.target + settings.range;
         this.color = new Array(3);
         this.originalColor = new Array(3);
-        this.originalColor[0] = [settings.color[0]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
-        this.originalColor[1] = [settings.color[1]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
-        this.originalColor[2] = [settings.color[2]+((Math.random()*settings.randomColorMod)-settings.randomColorMod/2)];
+        this.originalColor[0] = linearInterpolation(settings.color[0], settings.glow[0], Math.random()*settings.colorMod);
+        this.originalColor[1] = linearInterpolation(settings.color[1], settings.glow[1], Math.random()*settings.colorMod);
+        this.originalColor[2] = linearInterpolation(settings.color[2], settings.glow[2], Math.random()*settings.colorMod);
         this.colormod = 0.0;
         this.hex = new PIXI.Sprite(
         PIXI.loader.resources['hex'].texture

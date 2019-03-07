@@ -1,21 +1,144 @@
 .hero {
   width: 100%;
-  height: 100%;
+  height: 90vh;
   top: 0;
 }
 
-.hero .controls {
+.hero .settingsIcon {
+  cursor: pointer;
+  position: absolute;
+  background-color: #ff3200;
+  left: 0;
+  top: 0;
+  padding: 10px;
+  width: 20px;
+  height: 20px;
+  -webkit-transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+  transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+}
+
+.hero .settingsIcon.active {
+  left: 300px;
+}
+
+.hero .settings {
+  width: 300px;
+  height: 90vh;
+  left: -300px;
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 55, 0, 0.08);
+  border-right: #ff3200 2px solid;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+  transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+}
+
+.hero .settings h3 {
+  color: white;
+  font: "Montserrat", sans-serif;
+  text-align: center;
+  font-weight: 300;
+  letter-spacing: 1px;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.hero .settings .setting {
+  width: 90%;
+  margin: 0 auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.hero .settings .setting .slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 1.5px;
+  background: rgba(0, 0, 0, 0.3);
+  outline: none;
+  margin-top: 6.75px;
+  margin-bottom: 6.75px;
+}
+
+.hero .settings .setting .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 100%;
+  background: #ff3200;
+  cursor: pointer;
+  -webkit-transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+  transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+}
+
+.hero .settings .setting .slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  background: #ff3c00;
+  cursor: pointer;
+}
+
+.hero .settings .setting:hover .slider::-webkit-slider-thumb {
+  background: #ff3c00;
+  width: 12px;
+  height: 12px;
+}
+
+.hero .settings .setting:hover .slider::-moz-range-thumb {
+  background: #ff3c00;
+  width: 12px;
+  height: 12px;
+}
+
+.hero .settings .setting label {
+  height: 15px;
+  font: "Montserrat", sans-serif;
+  width: 100%;
+  text-align: left;
+  color: white;
+  line-height: 15px;
+  font-size: 10px;
+}
+
+.hero .settings.active {
+  left: 0;
+}
+
+.hero .centralContainer {
   width: 100%;
   position: absolute;
   top: 25%;
 }
 
-.hero .controls h1 {
+.hero .centralContainer h1 {
   width: 400px;
   color: White;
   text-align: center;
   font-family: "Montserrat", sans-serif;
   margin: 0 auto;
+}
+
+.hero .centralContainer a {
+  background-color: rgba(255, 75, 0, 0.5);
+  border-radius: 10px;
+  color: White;
+  text-align: center;
+  margin: 0 auto;
+  text-decoration: none;
+  display: block;
+  height: 50px;
+  line-height: 50px;
+  width: 130px;
 }
 
 .hero #joshSlider {

@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Silly thing</title>
+    <title>Noisey Hexes</title>
+    <!--Favicon-->
+    <link rel="shortcut icon" type="image/png" href="a/i/hex.png"/>
     <!--Scripts-->
     <script src="https://cdn.rawgit.com/josephg/noisejs/master/perlin.js"></script>
     <script src="a/j/pixi.min.js"></script>
+    <script src="a/j/settings.js"></script>
     <script src="a/j/main.js"></script>
     <!--Fonts-->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300" rel="stylesheet">
@@ -15,19 +18,36 @@
     <link rel="stylesheet" href="a/c/normalize.css">
     <!--CSS-->
     <link rel="stylesheet" href="a/c/master.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
     <header>
 
     </header>
     <section class="hero" id="display">
-        <div class="controls">
-            <h1>This will be cool, maybe?</h1>
+        <img class="settingsIcon active" src="a/i/gear.png" alt="">
+        <div class="settings active">
+            <h3>Settings</h3>
+            <div class="setting">
+                <label>Size of Hexagon:</label><input type="range" name="Hex Size" class="slider" value="50" id="size">
+            </div>
+            <div class="setting">
+                <label>Scale of Noise:</label><input type="range" name="Noise Scale" class="slider" value="33" id="scale">
+            </div>
+            <div class="setting">
+                <label>Speed of Noise:</label><input type="range" name="Noise Speed" class="slider" value="25" id="speed">
+            </div>
+            <div class="setting">
+                <label>Target Size of Noise:</label><input type="range" name="Target Range" class="slider" value="40" id="range">
+            </div>
+        </div>
+        <div class="centralContainer">
+            <h1>This will be cool, maybe?</h1>  
         </div>
     </section>
     <section class="credits">
-        <h2>Lorum Ipsum</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h2>Hexagons and Noise</h2>
+        <p>A fun project that uses PIXI.js and Perlin Noise to render a grid of hexagons and change their color based on the elevation within the noise map. Every tick I move through the elevation map to give the illusion the heightfield is shifting around.</p>
     </section>
 </body>
 </html>

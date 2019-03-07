@@ -1,20 +1,129 @@
 $font1: 'Montserrat', sans-serif;
-
+$highlight:rgba(255,50,0,1);
 .hero {
     width: 100%;
-    height: 100%;
+    height: 90vh;
     top: 0;
-    .controls  {
-        $controlsWidth:400px;
+    $settingsWidth:300px;
+    .settingsIcon {
+        cursor: pointer;
+        position: absolute;
+        background-color: $highlight;
+        left: 0;
+        top: 0;
+        padding: 10px;
+        width:20px;
+        height: 20px;
+        transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+    }
+    .settingsIcon.active {
+        left:$settingsWidth;
+
+    }
+    .settings {
+        width: $settingsWidth;
+        height: 90vh;
+        left: -$settingsWidth;
+        position: absolute;
+        top: 0;
+        background-color: rgba(255,55,0,.08);
+        border-right: $highlight 2px solid;
+        box-sizing: border-box;
+        transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+        h3 {
+            color:white;
+            font: $font1;
+            text-align:center;
+            font-weight: 300;
+            letter-spacing: 1px;
+            padding:10px 0;
+            margin:0;
+
+        }
+        .setting {
+            $settingHeight: 15px;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            .slider {
+                -webkit-appearance: none;
+                width: 100%;
+                height: $settingHeight*.1;
+                background: rgba(0,0,0,.3);
+                outline: none;
+                margin-top: $settingHeight*.45;
+                margin-bottom: $settingHeight*.45;
+            }
+
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width:  $settingHeight*.6;
+                height:  $settingHeight*.6;
+                border-radius: 100%;
+                background: $highlight;
+                cursor: pointer;
+                transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
+              }
+              
+              .slider::-moz-range-thumb {
+                width:  $settingHeight;
+                height:  $settingHeight;
+                border-radius: 100%;
+                background: $highlight*1.2;
+                cursor: pointer;
+              }
+              &:hover {
+                .slider::-webkit-slider-thumb {
+                    background: $highlight*1.2;
+                    width:  $settingHeight*.8;
+                    height:  $settingHeight*.8;
+                }
+                .slider::-moz-range-thumb {
+                    background: $highlight*1.2;
+                    width:  $settingHeight*.8;
+                    height:  $settingHeight*.8;
+                }
+            }
+            label {
+                height: $settingHeight;
+                font: $font1;
+                width: 100%;
+                text-align: left;
+                color:white;
+                line-height: $settingHeight;
+                font-size: 10px;
+            }
+        }
+    }
+    .settings.active {
+        left:0;
+    }
+    .centralContainer  {
+        $centralContainerWidth:400px;
         width: 100%;
         position: absolute;
         top: 25%;
         h1 {
-            width: $controlsWidth;
+            width: $centralContainerWidth   ;
             color: White;
             text-align: center;
             font-family: $font1;
             margin: 0 auto;
+        }
+        a {
+            background-color:rgba(255,75,0,.5);
+            border-radius: 10px;
+            color: White;
+            text-align: center;
+            margin: 0 auto;
+            text-decoration: none;
+            display: block;
+            height:50px;
+            line-height: 50px;
+            width: 130px;
         }
     }
     #joshSlider {
