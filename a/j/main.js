@@ -32,7 +32,10 @@ window.onload = () => {
 
     //Applying blur filter
     //TODO: move elsewhere
-
+    stage.filterArea = menuFilter;
+    menuFilter = new PIXI.Rectangle(0,0,bg.clientWidth,bg.clientHeight);
+    stage.filterArea = menuFilter;
+    stage.filters = [new PIXI.filters.BlurFilter(5, 3)];
 
     //Resizing Window Updating
     window.addEventListener("resize", (e) => {
