@@ -1,6 +1,6 @@
 
 
-let app, stage;
+let app, stage, graphics;
 let menuFilter;
 let hexBackground = [];
 let hexValues = {};
@@ -11,6 +11,24 @@ let inverseLinearInterpolation = (min, max, val) => {
 
 let linearInterpolation = (min, max, k) => {
     return min + (max - min) * k;
+}
+let polarToCart = (theta, dist) => {
+    theta = degToRad(theta);
+    let x  = dist*Math.cos(theta);
+    let y = dist*Math.sin(theta);
+    x = roundToTenth(x);
+    y = roundToTenth(y);
+    return [x,y];
+} 
+let roundToTenth = (num)  => {
+    num *= 10;
+    num = Math.round(num);
+    num *= .1;
+    return num;
+}
+let degToRad = (degrees) => {
+    radians = degrees * Math.PI / 180;
+    return radians;
 }
 
 window.onload = () => {
@@ -23,13 +41,13 @@ window.onload = () => {
         transparent: false,
         resolution: 1,
         backgroundColor:0x000000,
-        clearBeforeRender:true,
+        clearBeforeRender:false,
         autoResize:true
     });
     document.getElementById('display').appendChild(app.view);
 
     stage = new PIXI.Container();
-
+    graphics = new PIXI.Graphics();
     //Applying blur filter
     //TODO: move elsewhere
     stage.filterArea = menuFilter;
@@ -44,28 +62,17 @@ window.onload = () => {
         menuFilter = new PIXI.Rectangle(0,0,bg.clientWidth,bg.clientHeight);
         stage.filterArea = menuFilter;
         stage.filters = [new PIXI.filters.BlurFilter(5, 3)];
-        refreshDisplayHexagons(bg)
+        refreshDisplayHexagons(bg, graphics)
     });
 
     //run all setup scripts
     let setup = () => {
         //Setup hexagon grid
         setupNoise();
-        createHexagons(bg);
+        createHexagons(bg, graphics);
         animationLoop();
     }
-    //Load in images
-    PIXI.loader
-    .add("hex", "a/i/hex.png")
-    .load(setup);
-
-    // center the sprite's anchor point
-    //bunny.anchor.set(0.5);
-
-    // move the sprite to the center of the screen
-    //bunny.x = app.screen.width / 2;
-    //bunny.y = app.screen.height / 2;
-
+    
     let _t = NaN;
     let animationLoop = () => {
         let t = Date.now();
@@ -73,7 +80,7 @@ window.onload = () => {
         if (isNaN(deltaT)) {
         deltaT = 0;
         }
-    
+        graphics.clear();
         for (let i = 0; i < hexBackground.length; i++) {
             const element = hexBackground[i];
             element.update(deltaT);
@@ -84,6 +91,8 @@ window.onload = () => {
         app.render(stage);
         requestAnimationFrame(animationLoop);
     }
+
+    setup();
 }
 let setupNoise = () => {
     noise.seed(Math.floor(123));
@@ -134,18 +143,14 @@ let createHexagons = (bg) => {
     }
 };
 let refreshDisplayHexagons = (bg) => {
-    for (let i = 0; i < hexBackground.length; i++) {
-        const element = hexBackground[i];
-        element.hex.destroy();
-    }
     hexBackground.length = 0;
     createHexagons(bg);
 }
 class Hexagon { 
-    constructor(x,y,size) {
+    constructor(x,y,r) {
         this.x = x;
         this.y = y;
-        this.size = size;
+        this.r = r;
         this.val = 0.0;
         this.min = settings.target - settings.range;
         this.max = settings.target + settings.range;
@@ -155,23 +160,30 @@ class Hexagon {
         this.originalColor[1] = linearInterpolation(settings.color[1], settings.glow[1], Math.random()*settings.colorMod);
         this.originalColor[2] = linearInterpolation(settings.color[2], settings.glow[2], Math.random()*settings.colorMod);
         this.colormod = 0.0;
-        this.hex = new PIXI.Sprite(
-        PIXI.loader.resources['hex'].texture
-        );
+        this.hex = graphics;
     }
 
     draw(deltaT) {
-        this.hex.x = this.x;
-        this.hex.y = this.y;
-        this.hex.anchor.set(0.5);
-        this.hex.width = this.size*settings.widthModifier; /*scale modifiers*/
-        this.hex.height = this.size*settings.heightModifier;
-        this.hex.tint = PIXI.utils.rgb2hex(this.color);
+        this.hex.beginFill(PIXI.utils.rgb2hex(this.color));
+        this.hex.drawPolygon( this.getHexagonPts() );
+        this.hex.endFill();
+    }
+
+    getHexagonPts() {
+        let Hexagon = [];
+        let i;
+        for(i = 0;i < 6; i++) {
+            let coord = polarToCart((i*60)+90, settings.size*.6);
+            Hexagon.push(coord[0]+this.x);
+            Hexagon.push(coord[1]+this.y);
+        }
+        return Hexagon;
+        
     }
 
     update(deltaT) {
 
-        this.val = hexValues.retrieveHeight(this.x/this.size,this.y/this.size);
+        this.val = hexValues.retrieveHeight(this.x/this.r,this.y/this.r);
 
 
         if(this.val > this.min && this.val < this.max) {

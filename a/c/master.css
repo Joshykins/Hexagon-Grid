@@ -7,7 +7,7 @@
 .hero .settingsIcon {
   cursor: pointer;
   position: absolute;
-  background-color: #ff3200;
+  background-color: #3b3232;
   left: 0;
   top: 0;
   padding: 10px;
@@ -22,13 +22,14 @@
 }
 
 .hero .settings {
+  z-index: 512;
   width: 300px;
   height: 90vh;
   left: -300px;
   position: absolute;
   top: 0;
   background-color: rgba(255, 55, 0, 0.08);
-  border-right: #ff3200 2px solid;
+  border-right: #3b3232 2px solid;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   -webkit-transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
@@ -74,7 +75,7 @@
   width: 9px;
   height: 9px;
   border-radius: 100%;
-  background: #ff3200;
+  background: #3b3232;
   cursor: pointer;
   -webkit-transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
   transition: cubic-bezier(0.165, 0.84, 0.44, 1) 300ms;
@@ -84,18 +85,18 @@
   width: 15px;
   height: 15px;
   border-radius: 100%;
-  background: #ff3c00;
+  background: #473c3c;
   cursor: pointer;
 }
 
 .hero .settings .setting:hover .slider::-webkit-slider-thumb {
-  background: #ff3c00;
+  background: #473c3c;
   width: 12px;
   height: 12px;
 }
 
 .hero .settings .setting:hover .slider::-moz-range-thumb {
-  background: #ff3c00;
+  background: #473c3c;
   width: 12px;
   height: 12px;
 }

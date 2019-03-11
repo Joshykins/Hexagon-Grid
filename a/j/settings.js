@@ -25,6 +25,13 @@ let setupSettings = () => {
     let settingsMenu = document.querySelector(".settings");
     let bg = document.querySelector('#display');
     let setting = {
+        glred:document.querySelector("#glowred"),
+        glgreen:document.querySelector("#glowgreen"),
+        glblue:document.querySelector("#glowblue"),
+        bgred:document.querySelector("#backred"),
+        bggreen:document.querySelector("#backgreen"),
+        bgblue:document.querySelector("#backblue"),
+        colormod:document.querySelector("#colormod"),
         size: document.querySelector("#size"),
         scale: document.querySelector("#scale"),
         speed: document.querySelector("#speed"),
@@ -48,6 +55,34 @@ let setupSettings = () => {
     })
     setting.range.addEventListener("change", () => {
         settings.range = getSetting(0,.5,setting.range.value);
+        updateSettings(bg);
+    })
+    setting.colormod.addEventListener("change", () => {
+        settings.colorMod = getSetting(0,.1,setting.colormod.value);
+        updateSettings(bg);
+    })
+    setting.glred.addEventListener("change", () => {
+        settings.glow[0] = getSetting(0, 1, setting.glred.value);
+        updateSettings(bg);
+    })
+    setting.glblue.addEventListener("change", () => {
+        settings.glow[1] = getSetting(0, 1, setting.glblue.value);
+        updateSettings(bg);
+    })
+    setting.glgreen.addEventListener("change", () => {
+        settings.glow[2] = getSetting(0, 1, setting.glgreen.value);
+        updateSettings(bg);
+    })
+    setting.bgred.addEventListener("change", () => {
+        settings.color[0] = getSetting(0, 1, setting.bgred.value);
+        updateSettings(bg);
+    })
+    setting.bgblue.addEventListener("change", () => {
+        settings.color[1] = getSetting(0, 1, setting.bgblue.value);
+        updateSettings(bg);
+    })
+    setting.bggreen.addEventListener("change", () => {
+        settings.color[2] = getSetting(0, 1, setting.bggreen.value);
         updateSettings(bg);
     })
 }
